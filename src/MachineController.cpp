@@ -14,8 +14,8 @@ void changeState(MachineState newState)
 
 void initializeMachine()
 {
-    serial.println("Machine Initialized. Current State: IDLE");
-    changeState(MachiineState::IDLE);
+    Serial.println("Machine Initialized. Current State: IDLE");
+    changeState(MachineState::IDLE);
 }
 
 void updateMachine()
@@ -23,14 +23,14 @@ void updateMachine()
     switch (currentState)
     {
         case MachineState::IDLE:
-            serial.println("State: IDLE");
+            Serial.println("State: IDLE");
             changeState(MachineState::DOSING);
             break;
 
         case MachineState::DOSING:
             if(millis() - stateStartTime >= 2000)
             {
-                serial.println("Dose Complete");
+                Serial.println("Dose Complete");
                 changeState(MachineState::GRINDING);
             }
             break;
@@ -38,27 +38,27 @@ void updateMachine()
         case MachineState::GRINDING:
             if(millis() - stateStartTime >= 3000)
             {
-                serial.println("Grinding Complete");
-                changeState(MachineState::FILTERING);
+                Serial.println("Grinding Complete");
+                changeState(MachineState::WAITING_FOR_BREW);
             }
             break;
 
         case MachineState::WAITING_FOR_BREW:
             if(millis() - stateStartTime >= 4000)
             {
-                serial.println("Filtering Complete");
+                Serial.println("Filtering Complete");
                 changeState(MachineState::CLEANING);
             }
             break;
         case MachineState::CLEANING:
             if(millis() - stateStartTime >= 2000)
             {
-                serial.println("Cleaning Complete");
+                Serial.println("Cleaning Complete");
                 changeState(MachineState::IDLE);
             }
 
         case MachineState::ERROR:
-            serial.println("Error State Reached");
+            Serial.println("Error State Reached");
             break;
     }
 }

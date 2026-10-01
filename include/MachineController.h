@@ -1,15 +1,7 @@
 #ifndef MACHINE_CONTROLLER_H
 #define MACHINE_CONTROLLER_H
 
-enum class MachineState
-{
-    IDLE,
-    DOSING,
-    GRINDING,
-    WAITING_FOR_BREW,
-    CLEANING,
-    ERROR
-};
+#include "types.h"
 
 void initializeMachine();
 void updateMachine();

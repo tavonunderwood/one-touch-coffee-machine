@@ -1,92 +1,123 @@
-//Faciliates state machine
-
 #include <Arduino.h>
 #include "MachineController.h"
-#include "types.h"
+#include "Grinder.h"
+#include "FilterSystem.h"
+#include "UserControls.h"
+#include "pins.h"
 #include "config.h"
 
-static MachineState currentState = MachineState::IDLE;
-static unsigned long stateStartTime = 0;
+namespace {
+    MachineState state = MachineState::IDLE;
+    unsigned long stateStartMs = 0;
+    unsigned long activeGrindTimeMs = DEFAULT_GRIND_TIME_MS;
 
-#define DISCRETE_DOSING 2000
-#define BASE_GRINDING_TIME 10000
+    void changeState(MachineState next) {
+        // Turn off the motor as soon as grinding ends for any reason.
+        if (state == MachineState::GRINDING && next != MachineState::GRINDING) {
+            Grinder::stop();
+        }
 
-volatile bool startButtonPressed = false;
+        state = next;
+        stateStartMs = millis();
+        digitalWrite(PIN_STATUS_LED, (next == MachineState::IDLE || next == MachineState::ERROR) ? LOW : HIGH);
 
-//Updates the machine state and records the start time of the new state
-void changeState(MachineState newState)
-{
-    currentState = newState;
-    stateStartTime = millis();
+        switch (next) {
+            case MachineState::IDLE:
+                Grinder::stop();
+                FilterSystem::moveHome();
+                Serial.println(F("[IDLE] Turn knob to choose grind time; press to start."));
+                break;
+            case MachineState::GRINDING:
+                FilterSystem::moveHome();
+                Grinder::start();
+                Serial.print(F("[GRINDING] Motor ON for "));
+                Serial.print(activeGrindTimeMs / 1000UL);
+                Serial.println(F(" s."));
+                break;
+            case MachineState::BREW_WAIT:
+                Serial.print(F("[BREW WAIT] Simulating brewing for "));
+                Serial.print(BREW_SIMULATION_TIME_MS / 1000UL);
+                Serial.println(F(" s."));
+                break;
+            case MachineState::DISPOSING:
+                FilterSystem::moveToDump();
+                Serial.println(F("[DISPOSING] Servo moved toward disposal position."));
+                break;
+            case MachineState::RETURNING:
+                Grinder::stop();
+                FilterSystem::moveHome();
+                Serial.println(F("[RETURNING] Servo returning home."));
+                break;
+            case MachineState::ERROR:
+                Grinder::stop();
+                FilterSystem::moveHome();
+                Serial.println(F("[ERROR] Motor stopped. Press knob to reset."));
+                break;
+        }
+    }
 }
-//Initializes the machine and sets the initial state to IDLE
-void initializeMachine()
-{
-    Serial.println("Machine Initialized. Current State: IDLE");
+
+void initializeMachine() {
+    pinMode(PIN_STATUS_LED, OUTPUT);
+    Grinder::begin();
+    FilterSystem::begin();
+    UserControls::begin();
+    Serial.println(F("Coffee machine prototype initialized."));
+    Serial.println(F("Press knob while operating to cancel the cycle."));
     changeState(MachineState::IDLE);
 }
 
-//Updates the machine state based on the current state and elapsed time
-void updateMachine()
-{
-    switch (currentState)
-    {
-        case MachineState::IDLE:
-            Serial.println("State: IDLE");
-            //Wait for state change trigger (e.g., button press)
-            if (startButtonPressed)
-            {
-                startButtonPressed = false;
-                changeState(MachineState::DOSING);
-            }
-            break;
+void updateMachine() {
+    UserControls::update(state == MachineState::IDLE);
 
-        case MachineState::DOSING:
-            //turn rotor based on amount wanted
-            if(millis() - stateStartTime >= DISCRETE_DOSING)
-            {
-                //turn off rotor
-                //
-                Serial.println("Dose Complete");
-                changeState(MachineState::GRINDING);
-            }
-            if (measuredDoseComplete)
-            {
-                currentState = MachineState::GRINDING;
-            }
+    if (UserControls::consumeButtonPress()) {
+        if (state == MachineState::IDLE) {
+            activeGrindTimeMs = UserControls::selectedGrindTimeMs(); // latch recipe
+            changeState(MachineState::GRINDING);
+        } else if (state == MachineState::ERROR) {
+            changeState(MachineState::RETURNING);
+        } else {
+            Serial.println(F("[CANCEL] Cycle stopped by user."));
+            changeState(MachineState::RETURNING);
+        }
+        return;
+    }
+
+    const unsigned long elapsedMs = millis() - stateStartMs;
+    switch (state) {
+        case MachineState::IDLE:
             break;
 
         case MachineState::GRINDING:
-            //Start grinding process
-            Serial.println("State: GRINDING");
-            //Turn on motor with proper PWM
-            analogWrite(GRINDER_MOTOR_PIN, GRINDER_PWM_VALUE);
-            //Stop grinding after the specified time
-            if(millis() - stateStartTime >= 3000)
-            {
-                Serial.println("Grinding Complete");
-                changeState(MachineState::WAITING_FOR_BREW);
+            if (elapsedMs >= GRINDER_HARD_TIMEOUT_MS) {
+                changeState(MachineState::ERROR);
+            } else if (elapsedMs >= activeGrindTimeMs) {
+                changeState(MachineState::BREW_WAIT);
             }
             break;
 
-        case MachineState::WAITING_FOR_BREW:
-            Serial.println("State: WAITING_FOR_BREW");
-            Serial.println("Water is dispensed into the filter");
-            if(millis() - stateStartTime >= 4000)
-            {
-                Serial.println("Filtering Complete");
-                changeState(MachineState::CLEANING);
+        case MachineState::BREW_WAIT:
+            if (elapsedMs >= BREW_SIMULATION_TIME_MS) {
+                changeState(MachineState::DISPOSING);
             }
             break;
-        case MachineState::CLEANING:
-            if(millis() - stateStartTime >= 2000)
-            {
-                Serial.println("Cleaning Complete");
+
+        case MachineState::DISPOSING:
+            if (elapsedMs >= FILTER_DUMP_HOLD_MS) {
+                changeState(MachineState::RETURNING);
+            }
+            break;
+
+        case MachineState::RETURNING:
+            if (elapsedMs >= FILTER_RETURN_SETTLE_MS) {
                 changeState(MachineState::IDLE);
             }
+            break;
 
         case MachineState::ERROR:
-            Serial.println("Error State Reached");
+            // Stay stopped until user presses to reset.
             break;
     }
 }
+
+MachineState getMachineState() { return state; }

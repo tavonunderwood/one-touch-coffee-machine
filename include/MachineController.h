@@ -1,9 +1,6 @@
-#ifndef MACHINE_CONTROLLER_H
-#define MACHINE_CONTROLLER_H
-
+#pragma once
 #include "types.h"
 
 void initializeMachine();
 void updateMachine();
-
-#endif
+MachineState getMachineState();

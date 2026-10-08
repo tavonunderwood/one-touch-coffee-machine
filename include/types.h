@@ -1,7 +1,7 @@
 #pragma once
 #include <Arduino.h>
 
-// Full prototype sequence. DOSING/WATER/HEATER states are not needed.
+// Full prototype sequence
 enum class MachineState : uint8_t {
     IDLE,
     GRINDING,

@@ -12,6 +12,7 @@ namespace FilterSystem {
     void begin() {
         // Write the target before attach to avoid an unintended jump to 90°.
         filterServo.write(FILTER_HOME_ANGLE_DEG);
+        // Attach the servo after setting the initial position to avoid a sudden jump.
         filterServo.attach(PIN_FILTER_SERVO);
         moveHome();
     }

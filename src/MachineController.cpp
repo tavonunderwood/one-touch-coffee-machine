@@ -57,8 +57,11 @@ namespace {
     }
 }
 
-void initializeMachine() {
+void initializeMachine() 
+{
+    //Turns on LED to indicate machine status
     pinMode(PIN_STATUS_LED, OUTPUT);
+    //Calls begin from Grinder and other subsystems
     Grinder::begin();
     FilterSystem::begin();
     UserControls::begin();

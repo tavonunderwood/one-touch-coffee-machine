@@ -26,18 +26,23 @@ namespace {
 
     void moveSelection(int8_t direction) {
         if (ENCODER_REVERSE_DIRECTION) direction = -direction;
-        if (direction > 0 && selectedMs <= MAX_GRIND_TIME_MS - GRIND_TIME_STEP_MS) {
+        if (direction > 0 && selectedMs <= MAX_GRIND_TIME_MS - GRIND_TIME_STEP_MS) 
+        {
             selectedMs += GRIND_TIME_STEP_MS;
             printDuration();
-        } else if (direction < 0 && selectedMs >= MIN_GRIND_TIME_MS + GRIND_TIME_STEP_MS) {
+        } 
+        else if (direction < 0 && selectedMs >= MIN_GRIND_TIME_MS + GRIND_TIME_STEP_MS) 
+        {
             selectedMs -= GRIND_TIME_STEP_MS;
             printDuration();
         }
     }
 }
 
-namespace UserControls {
-    void begin() {
+namespace UserControls 
+{
+    void begin() 
+    {
         pinMode(PIN_ENCODER_A, INPUT_PULLUP);
         pinMode(PIN_ENCODER_B, INPUT_PULLUP);
         pinMode(PIN_ENCODER_BUTTON, INPUT_PULLUP);
@@ -48,10 +53,12 @@ namespace UserControls {
         printDuration();
     }
 
-    void update(bool allowDurationChange) {
+    void update(bool allowDurationChange) 
+    {
         // Gray-code quadrature decoder. The lookup table rejects invalid
         // two-bit jumps and naturally cancels many contact bounces.
-        static const int8_t transitionDelta[16] = {
+        static const int8_t transitionDelta[16] = 
+        {
              0, -1,  1,  0,
              1,  0,  0, -1,
             -1,  0,  0,  1,

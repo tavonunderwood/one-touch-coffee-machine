@@ -6,22 +6,31 @@
 #include "pins.h"
 #include "config.h"
 
-namespace {
+namespace 
+{
+    // Current state of the machine.
     MachineState state = MachineState::IDLE;
+    // Timestamp when the current state was entered.
     unsigned long stateStartMs = 0;
+    // The grind time currently selected by the user.
+    // This value is updated when the user starts a new grinding cycle.
     unsigned long activeGrindTimeMs = DEFAULT_GRIND_TIME_MS;
-
-    void changeState(MachineState next) {
+    // Changes the machine's state and performs associated actions.
+    void changeState(MachineState next) 
+    {
         // Turn off the motor as soon as grinding ends for any reason.
-        if (state == MachineState::GRINDING && next != MachineState::GRINDING) {
+        if (state == MachineState::GRINDING && next != MachineState::GRINDING) 
+        {
             Grinder::stop();
         }
-
+        // Update the machine's state and timestamp.
         state = next;
         stateStartMs = millis();
+        // Update the status LED based on the new state.
         digitalWrite(PIN_STATUS_LED, (next == MachineState::IDLE || next == MachineState::ERROR) ? LOW : HIGH);
 
-        switch (next) {
+        switch (next) 
+        {
             case MachineState::IDLE:
                 Grinder::stop();
                 FilterSystem::moveHome();
@@ -74,12 +83,17 @@ void updateMachine() {
     UserControls::update(state == MachineState::IDLE);
 
     if (UserControls::consumeButtonPress()) {
-        if (state == MachineState::IDLE) {
-            activeGrindTimeMs = UserControls::selectedGrindTimeMs(); // latch recipe
+        if (state == MachineState::IDLE) 
+        {
+            activeGrindTimeMs = UserControls::selectedGrindTimeMs(); 
             changeState(MachineState::GRINDING);
-        } else if (state == MachineState::ERROR) {
+        } 
+        else if (state == MachineState::ERROR) 
+        {
             changeState(MachineState::RETURNING);
-        } else {
+        } 
+        else 
+        {
             Serial.println(F("[CANCEL] Cycle stopped by user."));
             changeState(MachineState::RETURNING);
         }
@@ -92,27 +106,33 @@ void updateMachine() {
             break;
 
         case MachineState::GRINDING:
-            if (elapsedMs >= GRINDER_HARD_TIMEOUT_MS) {
+            if (elapsedMs >= GRINDER_HARD_TIMEOUT_MS) 
+            {
                 changeState(MachineState::ERROR);
-            } else if (elapsedMs >= activeGrindTimeMs) {
+            } 
+            else if (elapsedMs >= activeGrindTimeMs) 
+            {
                 changeState(MachineState::BREW_WAIT);
             }
             break;
 
         case MachineState::BREW_WAIT:
-            if (elapsedMs >= BREW_SIMULATION_TIME_MS) {
+            if (elapsedMs >= BREW_SIMULATION_TIME_MS) 
+            {
                 changeState(MachineState::DISPOSING);
             }
             break;
 
         case MachineState::DISPOSING:
-            if (elapsedMs >= FILTER_DUMP_HOLD_MS) {
+            if (elapsedMs >= FILTER_DUMP_HOLD_MS) 
+            {
                 changeState(MachineState::RETURNING);
             }
             break;
 
         case MachineState::RETURNING:
-            if (elapsedMs >= FILTER_RETURN_SETTLE_MS) {
+            if (elapsedMs >= FILTER_RETURN_SETTLE_MS) 
+            {
                 changeState(MachineState::IDLE);
             }
             break;

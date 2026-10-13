@@ -81,8 +81,31 @@ namespace UserControls
             -1,  0,  0,  1,
              0,  1, -1,  0
         };
+
+        static uint8_t lastAB = 255;
         const uint8_t ab = readAB();
+        //TODO: Remove or refine this debug output for the encoder AB states.
+        // if (ab != lastAB)
+        // {
+        //     Serial.print("Encoder AB: ");
+        //     Serial.println(ab);
+        //     lastAB = ab;
+        // }
+        // static unsigned long lastPrint = 0;
+
+        // if (millis() - lastPrint >= 200)
+        // {
+        //     lastPrint = millis();
+
+        //     Serial.print("A: ");
+        //     Serial.print(digitalRead(PIN_ENCODER_A));
+
+        //     Serial.print("  B: ");
+        //     Serial.println(digitalRead(PIN_ENCODER_B));
+        // }
         // Combine the previous and current AB states to form an index into the transition table.
+        // static cast to ensure the index is of type uint8_t.
+        //<< operator combines the previous and current AB states into a single index.
         const uint8_t index = static_cast<uint8_t>((previousAB << 2) | ab);
         previousAB = ab;
         // Update the quadrature sum based on the transition delta.

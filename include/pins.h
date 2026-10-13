@@ -5,7 +5,7 @@
 
 // KY-040 / EC11-style rotary encoder: CLK=A, DT=B, SW=push button.
 constexpr uint8_t PIN_ENCODER_A = 22;
-constexpr uint8_t PIN_ENCODER_B = 23;
+constexpr uint8_t PIN_ENCODER_B = 30;
 constexpr uint8_t PIN_ENCODER_BUTTON = 2;
 
 // Cytron MD30C in PWM/DIR mode: PWM controls speed, DIR controls direction.

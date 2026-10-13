@@ -17,11 +17,15 @@ namespace FilterSystem {
         moveHome();
     }
 
-    void moveToDump() {
+    void moveToDump() 
+    {
+        //Set this as the target angle for the filter disposal servo.
         filterServo.write(FILTER_DUMP_ANGLE_DEG);
     }
 
-    void moveHome() {
+    void moveHome() 
+    {
+        //Set this as the target angle for the filter disposal servo to return to home position.
         filterServo.write(FILTER_HOME_ANGLE_DEG);
     }
 }

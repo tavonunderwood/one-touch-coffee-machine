@@ -14,5 +14,5 @@ constexpr uint8_t PIN_GRINDER_DIR = 4;
 
 // Standard hobby servo signal. Power servo from an adequate 5-6 V rail,
 // NOT directly from the Arduino 5V output pin.
-constexpr uint8_t PIN_FILTER_SERVO = 11;
+constexpr uint8_t PIN_FILTER_SERVO = 12;
 constexpr uint8_t PIN_STATUS_LED = LED_BUILTIN;

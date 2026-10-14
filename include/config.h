@@ -19,7 +19,7 @@ constexpr uint8_t GRINDER_PWM_VALUE = 250;  // TODO: Chaange this
 constexpr bool GRINDER_DIRECTION_HIGH = false;
 constexpr unsigned long MIN_GRIND_TIME_MS = 5000UL;
 constexpr unsigned long MAX_GRIND_TIME_MS = 90000UL;
-constexpr unsigned long DEFAULT_GRIND_TIME_MS = 30000UL;
+constexpr unsigned long DEFAULT_GRIND_TIME_MS = 20000UL;
 constexpr unsigned long GRIND_TIME_STEP_MS = 5000UL;
 constexpr unsigned long GRINDER_HARD_TIMEOUT_MS = 95000UL;
 
@@ -29,7 +29,7 @@ constexpr float APPROX_GRAMS_PER_100_REVS = 6.13f;
 
 // ===== Demonstration brewing =====
 // No heater/water/pump used: this is just a timed pause.
-constexpr unsigned long BREW_SIMULATION_TIME_MS = 30000UL;
+constexpr unsigned long BREW_SIMULATION_TIME_MS = 120000UL;
 
 // ===== Filter disposal servo =====
 // These are servo commands, not guaranteed actual shaft displacement.

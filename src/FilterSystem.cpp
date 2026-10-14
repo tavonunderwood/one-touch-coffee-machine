@@ -21,6 +21,14 @@ namespace FilterSystem {
     {
         //Set this as the target angle for the filter disposal servo.
         filterServo.write(FILTER_DUMP_ANGLE_DEG);
+        //Shimmy Sequence
+        for (int i = 0; i < 25; i ++)
+        {
+            filterServo.write(30);
+            delay(100);
+            filterServo.write(26);
+            delay(100);
+        }
     }
 
     void moveHome() 

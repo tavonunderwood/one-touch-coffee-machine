@@ -82,7 +82,7 @@ namespace UserControls
              0,  1, -1,  0
         };
 
-        static uint8_t lastAB = 255;
+        //static uint8_t lastAB = 255;
         const uint8_t ab = readAB();
         //TODO: Remove or refine this debug output for the encoder AB states.
         // if (ab != lastAB)

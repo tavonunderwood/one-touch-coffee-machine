@@ -19,13 +19,14 @@ constexpr uint8_t GRINDER_PWM_VALUE = 250;  // TODO: Chaange this
 constexpr bool GRINDER_DIRECTION_HIGH = false;
 constexpr unsigned long MIN_GRIND_TIME_MS = 5000UL;
 constexpr unsigned long MAX_GRIND_TIME_MS = 90000UL;
-constexpr unsigned long DEFAULT_GRIND_TIME_MS = 20000UL;
+constexpr unsigned long DEFAULT_GRIND_TIME_MS = 30000UL; //30 seconds for ~ 6.13 grams
 constexpr unsigned long GRIND_TIME_STEP_MS = 5000UL;
 constexpr unsigned long GRINDER_HARD_TIMEOUT_MS = 95000UL;
 
 // Optional estimate from an earlier calibration; NOT closed-loop dosing.
 constexpr float APPROX_GRINDER_RPM = 200.0f;
 constexpr float APPROX_GRAMS_PER_100_REVS = 6.13f;
+constexpr float GRAMS_PER_MINUTE = APPROX_GRAMS_PER_100_REVS * APPROX_GRINDER_RPM / 100.0f;
 
 // ===== Demonstration brewing =====
 // No heater/water/pump used: this is just a timed pause.

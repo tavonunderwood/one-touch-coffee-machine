@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "MachineController.h"
 #include "Grinder.h"
-#include "FilterSystem.h"
+#include "Revolver.h"
 #include "UserControls.h"
 #include "pins.h"
 #include "config.h"
@@ -33,7 +33,7 @@ namespace
         {
             case MachineState::IDLE:
                 Grinder::stop();
-                FilterSystem::moveHome();
+                //FilterSystem::moveHome();
                 Serial.println(F("[IDLE] Turn knob to choose grind time; press to start."));
                 break;
             case MachineState::GRINDING:
@@ -49,7 +49,8 @@ namespace
                 Serial.println(F(" s."));
                 break;
             case MachineState::DISPOSING:
-                FilterSystem::moveToDump();
+                //FilterSystem::moveToDump();
+                Revolver::filterDispensed();
                 Serial.println(F("[DISPOSING] Servo moved toward disposal position."));
                 break;
             case MachineState::RETURNING:
@@ -72,7 +73,7 @@ void initializeMachine()
     pinMode(PIN_STATUS_LED, OUTPUT);
     //Calls begin from Grinder and other subsystems
     Grinder::begin();
-    FilterSystem::begin();
+    Revolver::begin();
     UserControls::begin();
     Serial.println(F("Coffee machine prototype initialized."));
     Serial.println(F("Press knob while operating to cancel the cycle."));

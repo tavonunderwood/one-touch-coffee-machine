@@ -39,3 +39,12 @@ constexpr uint8_t FILTER_HOME_ANGLE_DEG = 55;
 constexpr uint8_t FILTER_DUMP_ANGLE_DEG = 25;
 constexpr unsigned long FILTER_DUMP_HOLD_MS = 3000UL;
 constexpr unsigned long FILTER_RETURN_SETTLE_MS = 1500UL;
+
+// ===== Revolver Control =====
+constexpr uint8_t CCW_TIME_MS = 40;
+constexpr uint8_t CW_TIME_MS = 40;
+constexpr int COUNT_ADDR = 0;
+constexpr int INIT_ADDR = 1;
+constexpr byte INIT_MARKER = 0xA5;
+constexpr byte MAX_FILTERS = 8;
+byte filtersRemaining = 0;

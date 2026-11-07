@@ -14,5 +14,10 @@ constexpr uint8_t PIN_GRINDER_DIR = 4;
 
 // Standard hobby servo signal. Power servo from an adequate 5-6 V rail,
 // NOT directly from the Arduino 5V output pin.
-constexpr uint8_t PIN_FILTER_SERVO = 12;
-constexpr uint8_t PIN_STATUS_LED = LED_BUILTIN;
+// constexpr uint8_t PIN_FILTER_SERVO = 12;
+// constexpr uint8_t PIN_STATUS_LED = LED_BUILTIN;
+
+// Stepper Motor Driver (A4988, DRV8825, etc.) in STEP/DIR mode: STEP pulses the motor, DIR controls direction.
+//Stepper is in full step mode
+constexpr uint8_t PIN_STEPPER_STEP = 6;
+constexpr uint8_t PIN_STEPPER_DIR = 7;
